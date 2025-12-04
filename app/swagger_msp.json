@@ -1,0 +1,65 @@
+{
+    "openapi": "3.0.1",
+    "info": {
+      "title": "OCR MSP API",
+      "version": "1.0.0",
+      "description": "Swagger MSP pour docTR OCR API"
+    },
+    "paths": {
+      "/health": {
+        "get": {
+          "tags": ["health"],
+          "summary": "Vérifie l’état du moteur OCR",
+          "responses": {
+            "200": {
+              "description": "État de l’API",
+              "content": {
+                "application/json": {
+                  "example": {
+                    "status": "ok",
+                    "engine": "DoctrReader",
+                    "models_loaded": true,
+                    "device": "cuda:0"
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "/extract/ocr": {
+        "post": {
+          "tags": ["extract"],
+          "summary": "OCR extract text from image or PDF and return structured OCR data",
+          "parameters": [
+            {"name": "engineType", "in": "query", "schema": {"type": "string", "example": "DoctrReader"}},
+            {"name": "imageEnhancement", "in": "query", "schema": {"type": "boolean"}},
+            {"name": "binarize", "in": "query", "schema": {"type": "boolean"}},
+            {"name": "absoluteCoord", "in": "query", "schema": {"type": "boolean"}}
+          ],
+          "requestBody": {
+            "required": true,
+            "content": {
+              "image/jpeg": {"schema": {"$ref": "#/components/schemas/InputStream"}},
+              "image/png": {"schema": {"$ref": "#/components/schemas/InputStream"}},
+              "application/pdf": {"schema": {"$ref": "#/components/schemas/InputStream"}}
+            }
+          },
+          "responses": {
+            "200": {"description": "Structured OCR result"},
+            "204": {"description": "Empty body"},
+            "500": {"description": "General error"}
+          }
+        }
+      }
+    },
+    "components": {
+      "schemas": {
+        "InputStream": {
+          "type": "string",
+          "format": "binary",
+          "description": "Image or PDF binary stream for OCR processing"
+        }
+      }
+    }
+  }
