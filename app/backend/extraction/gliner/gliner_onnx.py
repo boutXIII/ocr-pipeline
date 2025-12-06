@@ -8,7 +8,7 @@
 from gliner import GLiNER
 
 def ner_gliner(text: str):
-    model = GLiNER.from_pretrained("app\models\gliner\SauerkrautLM-GLiNER", load_onnx_model=True, load_tokenizer=True, onnx_model_file="model.onnx")
+    model = GLiNER.from_pretrained("app\models\gliner\gliner_large-v2.5", load_onnx_model=True, load_tokenizer=True, onnx_model_file="model.onnx")
 
     if not text or len(text.strip()) == 0:
         return []
