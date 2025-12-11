@@ -36,9 +36,6 @@ app_state = {
 # -----------------------------------------------------
 def load_doctr():
     print("🔧 Chargement du modèle DocTR ONNX (db_resnet50 + crnn_vgg16_bn)")
-    # engine_cfg = EngineConfig(
-    #     providers=[("CPUExecutionProvider", {"arena_extend_strategy": "kSameAsRequested"})]
-    # )
 
     predictor = load_predictor(
         det_arch="db_resnet50",
@@ -53,20 +50,6 @@ def load_doctr():
         box_thresh=0.1,
         device=None,
     )
-
-    # predictor = ocr_predictor(
-    #     det_arch="db_resnet50",
-    #     reco_arch="crnn_vgg16_bn",
-    #     assume_straight_pages=True,
-    #     straighten_pages=True,
-    #     export_as_straight_boxes=True,
-    #     detect_orientation=False,
-    #     disable_page_orientation=False,
-    #     disable_crop_orientation=False,
-    #     detect_language=True,
-    #     det_engine_cfg=engine_cfg,
-    #     reco_engine_cfg=engine_cfg,
-    # )
 
     app_state["predictor"] = predictor
     app_state["models_loaded"] = True
@@ -187,7 +170,7 @@ async def extract_ocr(
             )
 
         predictor = app_state["predictor"]
-        result = predictor
+        result = predictor(doc)
 
         pages = []
 
