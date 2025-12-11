@@ -14,6 +14,9 @@ import importlib
 from pathlib import Path
 from typing import Optional
 
+from app.logger import get_logger
+logger = get_logger("ONNXTR")
+
 import numpy as np
 
 from onnxtr.models import EngineConfig, ocr_predictor
@@ -65,6 +68,7 @@ def find_model_path(model_name: str, models_dir: str = DEFAULT_ONNXTR_CACHE) -> 
     Recherche un fichier .pt correspondant au modèle choisi dans le cache local.
     Exemple : det_arch='db_resnet50' → 'db_resnet50-xxxx.pt'
     """
+    logger.debug("find_model_path")
     if not os.path.exists(models_dir):
         raise FileNotFoundError(f"Le dossier '{models_dir}' n'existe pas.")
     
@@ -108,7 +112,7 @@ def load_predictor(
     Returns:
         OCRPredictor (OnnxTR)
     """
-
+    logger.debug("load_predictor")
     # Config ONNXRuntime (CPU)
     engine_cfg = EngineConfig(
         providers=[
@@ -124,8 +128,8 @@ def load_predictor(
 
     det_model_fn = getattr(det_module, det_arch)
     reco_model_fn = getattr(reco_module, reco_arch)
-    print(f"Loading detection model from {det_model_fn}")
-    print(f"Loading detection model from {reco_model_fn}")
+    logger.debug("Loading detection model from %s", det_model_fn)
+    logger.debug("Loading detection model from %s", reco_model_fn)
 
     det_model = det_model_fn(det_path)
     # det_model = det_model_fn(pretrained=False, pretrained_backbone=False)
@@ -172,6 +176,7 @@ def forward_image(
     Returns:
         Carte de segmentation (numpy ndarray)
     """
+    logger.debug("forward_image")
     processed_batches = predictor.det_predictor.pre_processor([image])
     out = predictor.det_predictor.model(processed_batches[0], return_model_output=True)
     seg_map = out["out_map"]  # OnnxTR renvoie déjà du numpy
