@@ -40,6 +40,7 @@ onnxtr @ git+https://github.com/felixdittrich92/OnnxTR.git
 ############################################################
 rapidfuzz>=3.9.0
 gliner
+python-stdnum
 
 ############################################################
 # 🧠 Layout (YOLO)
@@ -53,3 +54,8 @@ layoutparser
 streamlit>=1.0.0
 streamlit-autorefresh
 psutil
+
+############################################################
+# 🖥️ Test
+############################################################
+pytest

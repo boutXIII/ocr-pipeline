@@ -156,11 +156,25 @@ with col1:
     else:
         st.warning("🔴 Arrêté")
         if st.button("🚀 Démarrer l’API"):
+            # start_service(
+            #     "API FastAPI",
+            #     [str(VENV_PYTHON),
+            #         "-m", "uvicorn",
+            #         "app.app_api:app",
+            #         "--host", "0.0.0.0",
+            #         "--port", "8080",
+            #         "--log-level", "trace",
+            #         "--reload",
+            #     ],
+            #     API_LOG,
+            #     "API FastAPI"
+            # )
             start_service(
                 "API FastAPI",
                 [str(VENV_PYTHON),
                     "-m", "uvicorn",
-                    "app.app_api:app",
+                    "app.api.main:app",
+                    "--workers", "1",
                     "--host", "0.0.0.0",
                     "--port", "8080",
                     "--log-level", "trace",
