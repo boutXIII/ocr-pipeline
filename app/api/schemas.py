@@ -153,7 +153,7 @@ class OCROut(BaseModel):
 
 
 class ReadIn(BaseModel):
-    document_class: str = Field(..., examples=["FACTURE"])
+    document_class: str = Field(default="RIB", examples=["FACTURE"])
     gliner_threshold: float = Field(default=0.7, ge=0.0, le=1.0)
 
 

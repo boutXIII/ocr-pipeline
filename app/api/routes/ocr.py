@@ -1,4 +1,4 @@
-from fastapi import APIRouter, Depends, File, HTTPException, UploadFile, status
+from fastapi import APIRouter, Depends, File, HTTPException, Request, UploadFile, status
 
 
 from app.api.schemas import (
@@ -13,7 +13,7 @@ from app.api.schemas import (
     EntityOut,
     FieldResult,
 )
-from app.api.utils import get_documents, resolve_geometry
+from app.api.utils import get_documents, resolve_geometry, print_type
 from app.api.vision import init_predictor
 from app.api.validators.strategy import build_registry
 from app.api.validators.extractor import extract_entities
@@ -29,14 +29,18 @@ REGISTRY = build_registry()
         summary="Perform OCR"
 )
 async def perform_ocr(
-    request: OCRIn = Depends(),
-    files: list[UploadFile] = [File(...)]
+    request: Request,
+    ocr_params: OCRIn = Depends(),
+    file: UploadFile = File(
+        None,
+        description="Upload image or PDF file (optional)"
+    ),
 ) -> list[OCROut]:
     """Runs docTR OCR model to analyze the input image"""
     try:
         # generator object to list
-        content, filenames = await get_documents(files)
-        predictor = init_predictor(request)
+        content, filenames = await get_documents(request, file)
+        predictor = init_predictor(ocr_params)
     except ValueError as e:
         raise HTTPException(status_code=400, detail=str(e))
 
@@ -89,13 +93,21 @@ async def perform_ocr(
         summary="OCR + NER (GLiNER) with document class"
 )
 async def perform_ocr(
+    request: Request,
     ocr_params: OCRIn = Depends(),
     read_params: ReadIn = Depends(),
-    files: list[UploadFile] = [File(...)]
+    file: UploadFile = File(
+        None,
+        description="Upload image or PDF file (optional)"
+    ),
 ) -> list[ReadOut]:
 
     try:
-        content, filenames = await get_documents(files)
+        content, filenames = await get_documents(request, file)
+        doc_type_votes = []
+        for page_img in content:   # content = DocumentFile
+            doc_type_votes.append(print_type(page_img))
+        print(doc_type_votes)
         predictor = init_predictor(ocr_params)
     except ValueError as e:
         raise HTTPException(status_code=400, detail=str(e))
